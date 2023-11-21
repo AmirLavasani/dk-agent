@@ -13,7 +13,7 @@ import random
 
 # URL Configs
 BASE_URL = "https://www.digikala.com"
-SEARCH_CATEGORY_BASE_PATH = 'search/category-lamp'
+SEARCH_CATEGORY_BASE_PATH = 'search/category-hand-tools'
 IMAGES_TYPE_FILTER = 'image/jpeg'
 
 
@@ -27,20 +27,19 @@ SEARCH_PAGE_LOAD_TIME = 5
 SEARCH_PAGE_MIN_NUMBER_OF_PRODUCT_LINKS = 20
 SEARCH_PAGE_NUM_WORKERS = 20
 SEARCH_PAGE_START = 1
-SEARCH_PAGE_END = 5
+SEARCH_PAGE_END = 2
 
 
 # Product Page Configs
 PRODUCT_PAGE_LOAD_TIME = 5
-PRODUCT_PAGE_NUM_WORKERS = 100
+PRODUCT_PAGE_NUM_WORKERS = 10
 
 # Image Downloader configs
-IMAGE_DOWNLOADER_NUM_WORKERS = 50
+IMAGE_DOWNLOADER_NUM_WORKERS = 10
 
 FAILED_SEARCH_PAGES_URLS = []
 FAILED_PRODUCT_PAGES_URLS = []
 FAILED_IMAGE_DOWNLOADS_URLS = []
-
 
 
 def save_html_to_file(html):
@@ -113,7 +112,7 @@ def get_search_page_links(url):
 
 def get_all_products_links(): 
     search_pages = [
-        f'{BASE_URL}/{SEARCH_CATEGORY_BASE_PATH}/?has_selling_stock=1&page={page}' for page in range(SEARCH_PAGE_START, SEARCH_PAGE_END)
+        f'{BASE_URL}/{SEARCH_CATEGORY_BASE_PATH}/?has_selling_stock=1&page={page}&sort=7' for page in range(SEARCH_PAGE_START, SEARCH_PAGE_END)
     ]
 
     # Concurrently fetch HTML content for each URL
@@ -209,7 +208,6 @@ def download_image(url, folder_path):
     try:
         response = requests.get(url)
         if response.status_code == 200:
-            file_extension = url.split('.')[-1]
             file_name = '-'.join(url.split('/'))
             extension = IMAGES_TYPE_FILTER.split('/')[1]
             file_path = os.path.join(folder_path, f"{file_name}.{extension}")
@@ -234,7 +232,7 @@ def download_images(image_urls, folder_path):
 def main():
     product_links = get_all_products_links()
 
-    image_links = get_all_images_links(product_links)
+    image_links = get_all_images_links(list(product_links[0]))
     print(len(image_links))
     print(image_links[0])
 
