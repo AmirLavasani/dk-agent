@@ -1,0 +1,5 @@
+requests
+selenium
+bs4
+retrying
+colorlog
